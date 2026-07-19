@@ -34,7 +34,7 @@ class profile(models.Model):
     def __str__(self):
         return self.user.username
     
-    def save(self, *args , **kwargs):
-        if not self.user.full_name:
-            self.full_name=self.user.username
-        super(profile, self).save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        if not self.full_name:
+         self.full_name = self.user.username
+         super().save(*args, **kwargs)

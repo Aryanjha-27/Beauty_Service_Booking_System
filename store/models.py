@@ -263,7 +263,7 @@ class Booking(models.Model):
     )
 
     customer = models.ForeignKey(
-        user_models.User,
+        user_models.user,
         on_delete=models.SET_NULL,
         null=True,
         related_name="bookings",
@@ -334,12 +334,12 @@ class ServiceReview(models.Model):
         related_name="review",
     )
     user = models.ForeignKey(
-        user_models.User,
+        user_models.user,
         on_delete=models.SET_NULL,
         null=True,
         related_name="reviews",
     )
-    rating      = models.IntegerField(choices=RATING, default=None)
+    rating      = models.IntegerField(choices=RATING, default=None ,null=True,blank=True)
     review      = models.TextField(null=True, blank=True)
     
     is_verified = models.BooleanField(default=False)
@@ -359,7 +359,7 @@ class ServiceReview(models.Model):
 class Wishlist(models.Model):
 
     user    = models.ForeignKey(
-        user_models.User,
+        user_models.user,
         on_delete=models.CASCADE,
         related_name="wishlist",
     )
@@ -397,7 +397,7 @@ class Notification(models.Model):
         alphabet="abcdefghijklmnopqrstuvwxyz",
     )
     user = models.ForeignKey(
-        user_models.User,
+        user_models.user,
         on_delete=models.CASCADE,
         related_name="notifications",
     )
