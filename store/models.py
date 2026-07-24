@@ -93,7 +93,7 @@ class Service(models.Model):
         unique=True,
         length=10,
         max_length=20,
-        alphabet="abcdefghijklmnopqrstuvwxyz",
+        alphabet="1234567890",
     )
 
     
@@ -209,7 +209,7 @@ class ServiceGallery(models.Model):
         unique=True,
         length=10,
         max_length=20,
-        alphabet="abcdefghijklmnopqrstuvwxyz",
+        alphabet="1234567890",
     )
     service = models.ForeignKey(
         Service,
@@ -259,7 +259,7 @@ class Booking(models.Model):
         unique=True,
         length=10,
         max_length=20,
-        alphabet="abcdefghijklmnopqrstuvwxyz",
+        alphabet="1234567890",
     )
 
     customer = models.ForeignKey(
@@ -318,7 +318,7 @@ class ServiceReview(models.Model):
         unique=True,
         length=10,
         max_length=20,
-        alphabet="abcdefghijklmnopqrstuvwxyz",
+        alphabet="1234567890",
     )
     service = models.ForeignKey(
         Service,
@@ -394,7 +394,7 @@ class Notification(models.Model):
         unique=True,
         length=10,
         max_length=20,
-        alphabet="abcdefghijklmnopqrstuvwxyz",
+        alphabet="1234567890",
     )
     user = models.ForeignKey(
         user_models.user,
