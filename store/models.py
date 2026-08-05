@@ -118,7 +118,7 @@ class Service(models.Model):
     
     title       = models.CharField(max_length=255)
     
-    description = CKEditor5Field(config_name="extend", null=True, blank=True)
+    description = CKEditor5Field(config_name="extends", null=True, blank=True)
     slug        = models.SlugField(unique=True)
 
 
