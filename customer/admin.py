@@ -1,13 +1,12 @@
 from django.contrib import admin
 
-from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
 
 from customer import models as customer_models
 
 
 class AddressAdmin(ImportExportModelAdmin):
-    list_display = ['user', 'full_name']
+    list_display = ['full_name','email','country','city','address','mobile']
 
 
 class WishlistAdmin(ImportExportModelAdmin):

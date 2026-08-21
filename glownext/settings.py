@@ -38,6 +38,8 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'jazzmin',
+    "rest_framework",
+    "corsheaders",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -52,17 +54,87 @@ INSTALLED_APPS = [
 
     'anymail',
     'django_ckeditor_5',
+    "api",
     
 ]
 
+JAZZMIN_SETTINGS = {
+
+    "site_title": "GlowNext Admin",
+
+    "site_header": "GlowNext",
+
+    "site_brand": "GlowNext",
+
+    "welcome_sign": "Welcome to GlowNext Administration",
+
+    "copyright": "GlowNext",
+
+    #"search_model": [
+       # "userauth.user",
+      #  "vendor.vendor",
+     #   "store.Service",
+    #    "store.Booking",
+   # ],
+
+    "show_sidebar": True,
+
+    "navigation_expanded": True,
+
+    "hide_apps": [],
+
+    "hide_models": [],
+
+    "order_with_respect_to": [
+        "userauth",
+        "vendor",
+        "store",
+        "customer",
+    ],
+
+    "icons": {
+        "userauth.user": "fas fa-users",
+        "userauth.profile": "fas fa-user-circle",
+
+        "vendor.vendor": "fas fa-store",
+        "vendor.Payout": "fas fa-money-bill-wave",
+        "vendor.BankAccount": "fas fa-university",
+        "vendor.Notifications": "fas fa-bell",
+
+        "store.Category": "fas fa-layer-group",
+        "store.Tag": "fas fa-tags",
+        "store.Service": "fas fa-spa",
+        "store.ServiceGallery": "fas fa-images",
+        "store.ServiceAvailability": "fas fa-clock",
+        "store.Booking": "fas fa-calendar-check",
+        "store.ServiceReview": "fas fa-star",
+        "store.Wishlist": "fas fa-heart",
+        "store.Notification": "fas fa-bell",
+
+        "customer.Address": "fas fa-map-marker-alt",
+        "customer.Wishlist": "fas fa-heart",
+        "customer.Notifications": "fas fa-bell",
+    },
+
+    "default_icon_parents": "fas fa-folder",
+    "default_icon_children": "fas fa-circle",
+
+    
+}
+
 MIDDLEWARE = [
+    
     'django.middleware.security.SecurityMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
 ]
 
 ROOT_URLCONF = 'glownext.urls'
@@ -89,9 +161,13 @@ WSGI_APPLICATION = 'glownext.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": "glownext",
+        "USER": "root",
+        "PASSWORD": "itsmylife1234",
+        "HOST": "127.0.0.1",
+        "PORT": "3306",
     }
 }
 
@@ -140,7 +216,7 @@ STATICFILES_DIRS = [
 
 MEDIA_URL = "/media/"
 
-MEDIA_ROOT = BASE_DIR / "media/images/default-document.jpg"
+MEDIA_ROOT = BASE_DIR / "media/"
 
 AUTH_USER_MODEL = "userauth.user"
 

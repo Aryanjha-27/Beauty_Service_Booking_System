@@ -28,7 +28,7 @@ class vendor(models.Model):
         country = models.CharField(max_length=100 , null=True, blank=True, default=None)
         city = models.CharField(max_length=100 , null=True, blank=True, default=None)
         document=models.ImageField(upload_to="images",default="default-document.jpg",blank=False)
-        vendor_id = ShortUUIDField (unique=True,max_length=20 , null=True, blank=True, default=None)
+        vendor_id = ShortUUIDField (unique=True,length=10,max_length=10 , null=True, blank=True, default=None ,alphabet ="1234567890")
         date = models.DateField(default=timezone.now)
         slug=models.SlugField(blank=True, null=True)
 

@@ -1,0 +1,132 @@
+.services {
+    padding: 100px 24px;
+    background: #FFF5FA;
+}
+
+.services-badge {
+    background: #FFE0EE;
+    color: #E85D8A;
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 24px;
+}
+
+.service-card {
+    background: white;
+    border-radius: 20px;
+    padding: 28px;
+    border: 1px solid #F5D8E8;
+}
+
+.service-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(232, 93, 138, 0.2);
+}
+
+.service-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.service-price {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.discounted-price {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.original-price {
+    font-size: 13px;
+    color: red;
+    text-decoration: line-through;
+}
+.service-icon i {
+    color: white;
+    font-size: 20px;
+}
+
+.service-icon--hair {
+    background: linear-gradient(135deg, #F07098, #E85D8A);
+}
+
+.service-icon--makeup {
+    background: linear-gradient(135deg, #F0A0C0, #D4709A);
+}
+
+.service-icon--nails {
+    background: linear-gradient(135deg, #FFB0CC, #F07098);
+}
+
+.service-icon--skin {
+    background: linear-gradient(135deg, #7BC8B8, #5AB0A0);
+}
+
+.service-icon--massage {
+    background: linear-gradient(135deg, #F5C0D8, #F0A0C0);
+}
+
+.service-category {
+    display: inline-block;
+    background: #FFF0F5;
+    color: #E85D8A;
+    padding: 3px 10px;
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.service-name {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: #2D1525;
+    margin-bottom: 8px;
+}
+
+.service-desc {
+    font-size: 14px;
+    color: rgba(140, 80, 110, 0.6);
+    line-height: 1.6;
+    margin-bottom: 20px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.service-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.service-price {
+    font-family: 'Playfair Display', serif;
+    font-weight: 800;
+    font-size: 22px;
+    color: #2D1525;
+}
+
+.service-duration {
+    font-size: 13px;
+    color: #E85D8A;
+}
+
+.service-duration i {
+    margin-right: 4px;
+}

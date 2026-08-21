@@ -2,9 +2,7 @@ from django.contrib import admin
 from store import models as store_models
 
 
-# ==========================
-# Inline Models
-# ==========================
+
 
 class ServiceGalleryInline(admin.TabularInline):
     model = store_models.ServiceGallery
@@ -16,9 +14,7 @@ class ServiceAvailabilityInline(admin.TabularInline):
     extra = 1
 
 
-# ==========================
-# Category
-# ==========================
+
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ("title", "slug")
@@ -28,18 +24,14 @@ class CategoryAdmin(admin.ModelAdmin):
     }
 
 
-# ==========================
-# Tag
-# ==========================
+
 
 class TagAdmin(admin.ModelAdmin):
     list_display = ("title",)
     search_fields = ("title",)
 
 
-# ==========================
-# Service
-# ==========================
+
 
 class ServiceAdmin(admin.ModelAdmin):
     list_display = (
@@ -86,9 +78,7 @@ class ServiceAdmin(admin.ModelAdmin):
     ]
 
 
-# ==========================
-# Service Gallery
-# ==========================
+
 
 class ServiceGalleryAdmin(admin.ModelAdmin):
     list_display = (
@@ -102,9 +92,7 @@ class ServiceGalleryAdmin(admin.ModelAdmin):
     )
 
 
-# ==========================
-# Service Availability
-# ==========================
+
 
 class ServiceAvailabilityAdmin(admin.ModelAdmin):
     list_display = (
@@ -125,30 +113,39 @@ class ServiceAvailabilityAdmin(admin.ModelAdmin):
     )
 
 
-# ==========================
-# Booking
-# ==========================
+
 
 class BookingAdmin(admin.ModelAdmin):
+
     list_display = (
         "bid",
         "customer",
         "service",
+        "get_vendor",
+        "service_type",
+        "scheduled_date",
+        "scheduled_time",
         "booking_status",
         "payment_status",
-        "payment_method",
         "total",
-        "scheduled_date",
     )
 
     list_filter = (
         "booking_status",
         "payment_status",
         "payment_method",
+        "service_type",
+        "scheduled_date",
     )
 
     search_fields = (
         "bid",
+        "customer__email",
+        "customer__username",
+        "service__title",
+        "service__vendor__store_name",
+        "khalti_pidx",
+        "khalti_txn_id",
     )
 
     readonly_fields = (
@@ -157,10 +154,18 @@ class BookingAdmin(admin.ModelAdmin):
         "updated",
     )
 
+    date_hierarchy = "scheduled_date"
 
-# ==========================
-# Service Review
-# ==========================
+    list_per_page = 25
+
+    
+    def get_vendor(self, obj):
+        if obj.service and obj.service.vendor:
+            return obj.service.vendor.store_name
+
+        return "N/A"
+
+
 
 class ServiceReviewAdmin(admin.ModelAdmin):
     list_display = (
@@ -179,9 +184,7 @@ class ServiceReviewAdmin(admin.ModelAdmin):
     )
 
 
-# ==========================
-# Wishlist
-# ==========================
+
 
 class WishlistAdmin(admin.ModelAdmin):
     list_display = (
@@ -191,9 +194,6 @@ class WishlistAdmin(admin.ModelAdmin):
     )
 
 
-# ==========================
-# Notification
-# ==========================
 
 class NotificationAdmin(admin.ModelAdmin):
     list_display = (
@@ -209,9 +209,7 @@ class NotificationAdmin(admin.ModelAdmin):
     )
 
 
-# ==========================
-# Register Models
-# ==========================
+
 
 admin.site.register(store_models.Category, CategoryAdmin)
 admin.site.register(store_models.Tag, TagAdmin)

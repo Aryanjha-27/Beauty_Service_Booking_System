@@ -10,17 +10,25 @@ TYPE=(
 )
 
 class Wishlist(models.Model):
-    user = models.ForeignKey(user, on_delete=models.CASCADE,related_name="customer_wishlists", null=True,blank=True)
-    service = models.ForeignKey(Service, on_delete=models.CASCADE , related_name="wishlist")
+    user = models.ForeignKey(
+        user,
+        on_delete=models.CASCADE,
+        related_name="customer_wishlists",
+        null=True,
+        blank=True
+    )
+
+    service = models.ForeignKey(
+        Service,
+        on_delete=models.CASCADE,
+        related_name="customer_wishlist_items"
+    )
 
     class Meta:
-        verbose_name_plural= "Wishlist"
+        verbose_name_plural = "Wishlists"
 
-        def __str__(self):
-            if self.service.name:
-                return self.service.name
-            else:
-                return "Wishlist"
+    def __str__(self):
+        return f"{self.user} - {self.service.title}"
 
 class Address(models.Model):
     user =models.ForeignKey(user, on_delete=models.CASCADE, null=True)
@@ -32,7 +40,7 @@ class Address(models.Model):
     address = models.CharField(max_length=100 , null=True, blank=True, default=None)
 
     class Meta:
-        verbose_name_plural = "Customer Address"
+        verbose_name_plural = "Customer Info"
 
     def __str__(self):
         return self.full_name

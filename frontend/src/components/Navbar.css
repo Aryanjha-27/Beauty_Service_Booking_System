@@ -1,0 +1,95 @@
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 16px 24px;
+    background: transparent;
+    backdrop-filter: none;
+    box-shadow: none;
+    transition: all 0.3s ease;
+}
+
+.navbar.scrolled {
+    background: rgba(255, 245, 250, 0.95);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 4px 30px rgba(45, 21, 37, 0.08);
+}
+
+.navbar-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.nav-logo-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #E85D8A, #F0A0C0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-logo-icon i {
+    color: white;
+    font-size: 18px;
+}
+
+.nav-logo-text {
+    font-family: 'Playfair Display', serif;
+    font-weight: 800;
+    font-size: 24px;
+    color: #2D1525;
+}
+
+.nav-links {
+    display: flex;
+    gap: 28px;
+}
+
+.nav-link {
+    background: none;
+    border: none;
+    color: #8C2455;
+    font-weight: 500;
+    font-size: 15px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+    color: #E85D8A;
+}
+
+.nav-auth {
+    display: flex;
+    gap: 12px;
+}
+
+.nav-auth .btn-outline,
+.nav-auth .btn-primary {
+    font-size: 14px;
+    padding: 8px 20px;
+}
+
+@media (max-width: 1024px) {
+    .nav-links {
+        display: none;
+    }
+}
