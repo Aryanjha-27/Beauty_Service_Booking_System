@@ -1,13 +1,43 @@
 from django.urls import path
 
-from .views import TestAPI, ServicesAPI
-
+from .views import (
+    AdminDashboardAPI,
+    BookingsAPI,
+    CategoriesAPI,
+    CustomerAddressAPI,
+    CustomerNotificationsAPI,
+    CustomerWishlistAPI,
+    KhaltiCallbackAPI,
+    KhaltiInitiateAPI,
+    NotificationsAPI,
+    ReviewsAPI,
+    ServiceDetailAPI,
+    ServicesAPI,
+    TestAPI,
+    VendorDetailAPI,
+    VendorVerificationAPI,
+    VendorsAPI,
+    PendingVendorsAPI,
+    WishlistsAPI,
+)
 
 urlpatterns = [
-
-    # Test React → Django connection
     path("test/", TestAPI.as_view()),
-
-    # Send services from Django → React
+    path("admin/dashboard/", AdminDashboardAPI.as_view()),
+    path("categories/", CategoriesAPI.as_view()),
     path("services/", ServicesAPI.as_view()),
-]   
+    path("services/<slug:slug>/", ServiceDetailAPI.as_view()),
+    path("services/<slug:slug>/reviews/", ReviewsAPI.as_view()),
+    path("vendors/", VendorsAPI.as_view()),
+    path("vendors/pending/", PendingVendorsAPI.as_view()),
+    path("vendors/<int:pk>/verify/", VendorVerificationAPI.as_view()),
+    path("vendors/<slug:slug>/", VendorDetailAPI.as_view()),
+    path("bookings/", BookingsAPI.as_view()),
+    path("wishlists/", WishlistsAPI.as_view()),
+    path("notifications/", NotificationsAPI.as_view()),
+    path("customer/notifications/", CustomerNotificationsAPI.as_view()),
+    path("customer/address/", CustomerAddressAPI.as_view()),
+    path("customer/wishlist/", CustomerWishlistAPI.as_view()),
+    path("payments/khalti/initiate/", KhaltiInitiateAPI.as_view()),
+    path("payments/khalti/callback/", KhaltiCallbackAPI.as_view()),
+]

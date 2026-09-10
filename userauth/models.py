@@ -11,7 +11,7 @@ class user(AbstractUser):
     username = models.CharField(
         max_length=255,
         null=True,
-        blank=True
+        
     )
 
     email = models.EmailField(
@@ -48,14 +48,20 @@ class profile(models.Model):
     full_name = models.CharField(
         max_length=255,
         null=True,
-        blank=True
+        
     )
+    address= models.CharField(
+            max_length=255,
+            null=True,
+        )
 
     mobile = models.CharField(
         max_length=255,
         null=True,
-        blank=True
+        
     )
+
+   
 
     user_type = models.CharField(
         max_length=255,

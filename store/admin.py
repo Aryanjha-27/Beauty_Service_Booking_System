@@ -1,5 +1,6 @@
 from django.contrib import admin
 from store import models as store_models
+from vendor import models as vendor_models
 
 
 
@@ -71,6 +72,11 @@ class ServiceAdmin(admin.ModelAdmin):
         "date",
         "updated",
     )
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "vendor":
+            kwargs["queryset"] = vendor_models.vendor.objects.filter(is_verified=True).order_by("store_name")
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     inlines = [
         ServiceGalleryInline,

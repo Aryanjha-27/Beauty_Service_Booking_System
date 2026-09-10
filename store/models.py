@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 from shortuuid.django_fields import ShortUUIDField
 from django.utils import timezone
 from django.utils.text import slugify
@@ -127,13 +128,11 @@ class Service(models.Model):
     discount_price = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
 
 
-
     service_type = models.CharField(
         max_length=10,
         choices=SERVICE_TYPE,
         default="Store",
     )
-
 
     thumbnail = models.FileField(upload_to="service/thumbnail", null=True, blank=True)
 
@@ -148,12 +147,19 @@ class Service(models.Model):
     def __str__(self):
         return self.title
 
+    def clean(self):
+        if self._state.adding and self.vendor_id and not self.vendor.is_verified:
+            raise ValidationError("Only verified vendors can post services.")
+
     class Meta:
         ordering = ["-date"]
         verbose_name_plural = "Services"
 
     def save(self, *args, **kwargs):
-       
+        if self._state.adding and self.vendor_id:
+            vendor = self.vendor if hasattr(self, "vendor") else vendor_models.vendor.objects.get(pk=self.vendor_id)
+            if not vendor.is_verified:
+                raise ValidationError("Only verified vendors can post services.")
         if not self.slug:
             self.slug = slugify(self.title) + "-" + shortuuid.uuid()[:4]
         super().save(*args, **kwargs)

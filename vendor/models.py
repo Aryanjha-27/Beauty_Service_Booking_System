@@ -19,6 +19,13 @@ TYPE=(
     ("Service Completed","Service Completed"),
 )
 
+VENDOR_STATUS = (
+    ("Pending", "Pending"),
+    ("Verified", "Verified"),
+    ("Rejected", "Rejected"),
+)
+
+
 class vendor(models.Model):
         user =models.OneToOneField (user, on_delete=models.CASCADE, null=True,related_name="Vendor_name")
         image=models.ImageField(upload_to="images", default="shop-image.jpg", blank=True)
@@ -28,7 +35,10 @@ class vendor(models.Model):
         country = models.CharField(max_length=100 , null=True, blank=True, default=None)
         city = models.CharField(max_length=100 , null=True, blank=True, default=None)
         document=models.ImageField(upload_to="images",default="default-document.jpg",blank=False)
-        vendor_id = ShortUUIDField (unique=True,length=10,max_length=10 , null=True, blank=True, default=None ,alphabet ="1234567890")
+        vendor_id = ShortUUIDField (unique=True,length=10,max_length=20 , null=True, blank=True, default=None ,alphabet ="1234567890")
+        verification_status = models.CharField(max_length=20, choices=VENDOR_STATUS, default="Pending")
+        is_verified = models.BooleanField(default=False)
+        verified_at = models.DateTimeField(null=True, blank=True)
         date = models.DateField(default=timezone.now)
         slug=models.SlugField(blank=True, null=True)
 
@@ -38,6 +48,14 @@ class vendor(models.Model):
         def save(self, *args, **kwargs):
                 if self.slug=="" or self.slug==None:
                         self.slug = slugify(self.store_name)
+                if self.is_verified and self.verification_status != "Verified":
+                        self.verification_status = "Verified"
+                if self.is_verified and self.verified_at is None:
+                        self.verified_at = timezone.now()
+                elif not self.is_verified and self.verification_status == "Verified":
+                        self.verification_status = "Pending"
+                if not self.is_verified:
+                        self.verified_at = None
                 super(vendor, self).save(*args, **kwargs) 
 
 class Payout(models.Model):

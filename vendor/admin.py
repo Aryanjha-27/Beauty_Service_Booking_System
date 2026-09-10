@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils import timezone
 from vendor import models as vendor_models
 
 
@@ -7,10 +8,12 @@ class VendorAdmin(admin.ModelAdmin):
 
     list_display = (
         "store_name",
-        "user",
         "email",
         "country",
         "city",
+        "document",
+        "verification_status",
+        "is_verified",
         "vendor_id",
         "date",
     )
@@ -20,6 +23,7 @@ class VendorAdmin(admin.ModelAdmin):
         "user__username",
         "user__email",
         "vendor_id",
+        "verification_status",
     )
 
     prepopulated_fields = {
@@ -29,6 +33,8 @@ class VendorAdmin(admin.ModelAdmin):
     list_filter = (
         "country",
         "city",
+        "verification_status",
+        "is_verified",
         "date",
     )
 
@@ -36,9 +42,38 @@ class VendorAdmin(admin.ModelAdmin):
         "-date",
     )
 
+    readonly_fields = (
+        "vendor_id",
+        "date",
+        "document",
+    )
+
     actions = (
+        "verify_selected_vendors",
         "delete_selected",
     )
+
+    def verify_selected_vendors(self, request, queryset):
+        updated = 0
+        for vendor in queryset:
+            vendor.is_verified = True
+            vendor.verification_status = "Verified"
+            vendor.verified_at = timezone.now()
+            vendor.save()
+            updated += 1
+        self.message_user(request, f"{updated} vendor(s) verified successfully.")
+
+    verify_selected_vendors.short_description = "Verify selected vendors"
+
+    def save_model(self, request, obj, form, change):
+        if obj.is_verified:
+            obj.verification_status = "Verified"
+            if obj.verified_at is None:
+                obj.verified_at = timezone.now()
+        else:
+            obj.verification_status = "Pending"
+            obj.verified_at = None
+        super().save_model(request, obj, form, change)
 
 
 # Payout Admin

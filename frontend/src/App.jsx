@@ -2,6 +2,7 @@ import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import AboutUs from "./components/AboutUs";
 import Services from "./components/Services";
+import Vender from "./components/vender";
 import HowItWorks from "./components/HowItWorks";
 import Footer from "./components/Footer";
 
@@ -25,6 +26,9 @@ function App() {
 
       {/* Services loaded from Django API */}
       <Services />
+
+      {/* Verified vendors loaded from Django API */}
+      <Vender />
 
       {/* How GlowNext works */}
       <HowItWorks />

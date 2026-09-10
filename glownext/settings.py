@@ -162,12 +162,12 @@ WSGI_APPLICATION = 'glownext.wsgi.application'
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": "glownext",
-        "USER": "root",
-        "PASSWORD": "itsmylife1234",
-        "HOST": "127.0.0.1",
-        "PORT": "3306",
+        "ENGINE": env.str("DB_ENGINE", "django.db.backends.mysql"),
+        "NAME": env.str("DB_NAME", "glownext"),
+        "USER": env.str("DB_USER", "root"),
+        "PASSWORD": env.str("DB_PASSWORD", ""),
+        "HOST": env.str("DB_HOST", "127.0.0.1"),
+        "PORT": env.int("DB_PORT", 3306),
     }
 }
 

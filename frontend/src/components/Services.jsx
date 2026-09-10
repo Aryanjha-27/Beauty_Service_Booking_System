@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import "./Services.css";
 
+const DJANGO_URL = "http://127.0.0.1:8000";
+
 function Services() {
   // Stores services received from Django
   const [services, setServices] = useState([]);
@@ -13,14 +15,11 @@ function Services() {
 
   useEffect(() => {
     // Request services from Django
-    fetch("http://127.0.0.1:8000/api/services/")
-      // Convert Django response into JSON
+    fetch(`${DJANGO_URL}/api/services/`)
       .then((response) => {
-        // Check if Django returned an error
         if (!response.ok) {
-          throw new Error("Failed to load services");
+          throw new Error(`Services API returned ${response.status}`);
         }
-
         return response.json();
       })
 
@@ -60,6 +59,10 @@ function Services() {
     );
   }
 
+  function mediaUrl(path) {
+    return path ? `${DJANGO_URL}${path}` : "";
+  }
+
   return (
     <section id="services" className="services">
       <div className="container">
@@ -79,7 +82,7 @@ function Services() {
             <div key={service.sid} className="service-card card-hover">
               <div className="service-icon">
                 <img
-                  src={`http://127.0.0.1:8000${service.thumbnail}`}
+                  src={mediaUrl(service.thumbnail)}
                   alt={service.thumbnail}
                 />
               </div>

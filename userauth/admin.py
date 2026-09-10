@@ -11,6 +11,7 @@ class ProfileInline(admin.StackedInline):
     fields = (
         "user_type",
         "full_name",
+        "address",
         "mobile",
         "image",
     )
@@ -113,8 +114,10 @@ class ProfileAdmin(admin.ModelAdmin):
     list_display = (
         "full_name",
         "get_email",
-        "user_type",
+        "address",
         "mobile",
+        "user_type",
+        
     )
 
     list_filter = (

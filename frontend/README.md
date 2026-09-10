@@ -4,15 +4,32 @@ This template provides a minimal setup to get React working in Vite with HMR and
 
 Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+# GlowNext frontend
 
-## React Compiler
+This folder contains the React and Vite frontend for GlowNext. Django remains the API and database owner.
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+From the project root, start Django first:
 
-Note: This will impact Vite dev & build performances.
+```powershell
+python manage.py runserver
+```
 
-## Expanding the ESLint configuration
+Then run the frontend:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```powershell
+Set-Location .\frontend
+npm install
+npm run dev
+```
+
+The React app reads live services from `/api/services/` and verified vendors from `/api/vendors/` on Django at `http://127.0.0.1:8000`.
+
+Useful commands:
+
+```powershell
+npm run lint
+npm run build
+npm run preview
+```
+
+See the root [README](../README.md) for setup and [CODE_GUIDE.md](../CODE_GUIDE.md) for the file-by-file explanation.
