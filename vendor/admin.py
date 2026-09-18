@@ -3,7 +3,7 @@ from django.utils import timezone
 from vendor import models as vendor_models
 
 
-# Vendor Admin
+# Configures vendor review, search, filtering, and verification actions.
 class VendorAdmin(admin.ModelAdmin):
 
     list_display = (
@@ -54,6 +54,7 @@ class VendorAdmin(admin.ModelAdmin):
     )
 
     def verify_selected_vendors(self, request, queryset):
+        # Mark every selected vendor as verified and record the verification time.
         updated = 0
         for vendor in queryset:
             vendor.is_verified = True
@@ -66,6 +67,7 @@ class VendorAdmin(admin.ModelAdmin):
     verify_selected_vendors.short_description = "Verify selected vendors"
 
     def save_model(self, request, obj, form, change):
+        # Normalize verification fields whenever staff save a vendor.
         if obj.is_verified:
             obj.verification_status = "Verified"
             if obj.verified_at is None:
@@ -76,7 +78,7 @@ class VendorAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
-# Payout Admin
+# Configures vendor payout records in Django admin.
 class PayoutAdmin(admin.ModelAdmin):
 
     list_display = (
@@ -101,7 +103,7 @@ class PayoutAdmin(admin.ModelAdmin):
     )
 
 
-# Bank Account Admin
+# Configures vendor payout accounts in Django admin.
 class BankAccountAdmin(admin.ModelAdmin):
 
     list_display = (
@@ -128,7 +130,7 @@ class BankAccountAdmin(admin.ModelAdmin):
     )
 
 
-# Notifications Admin
+# Configures vendor notifications in Django admin.
 class NotificationsAdmin(admin.ModelAdmin):
 
     list_display = (
@@ -159,6 +161,7 @@ class NotificationsAdmin(admin.ModelAdmin):
     )
 
 
+# Register vendor models so staff can manage them in Django admin.
 admin.site.register(vendor_models.vendor, VendorAdmin)
 admin.site.register(vendor_models.Payout, PayoutAdmin)
 admin.site.register(vendor_models.BankAccount, BankAccountAdmin)

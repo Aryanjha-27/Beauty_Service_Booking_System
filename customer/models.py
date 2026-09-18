@@ -9,6 +9,7 @@ TYPE=(
     ("Service Completed","Service Completed"),
 )
 
+# Stores services saved by customers.
 class Wishlist(models.Model):
     user = models.ForeignKey(
         user,
@@ -30,6 +31,7 @@ class Wishlist(models.Model):
     def __str__(self):
         return f"{self.user} - {self.service.title}"
 
+# Stores a customer's contact and delivery address.
 class Address(models.Model):
     user =models.ForeignKey(user, on_delete=models.CASCADE, null=True)
     full_name = models.CharField(max_length=200 , null=True, blank=True, default=None)
@@ -45,6 +47,7 @@ class Address(models.Model):
     def __str__(self):
         return self.full_name
 
+# Stores notifications shown to customers.
 class Notifications(models.Model):
         user =models.ForeignKey(user, on_delete=models.CASCADE,related_name="customer_norifications", null=True)
         type = models.CharField(max_length=100 , choices=TYPE, default=None)

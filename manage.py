@@ -6,6 +6,7 @@ import sys
 
 def main():
     """Run administrative tasks."""
+    # Tell Django which settings module should configure management commands.
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'glownext.settings')
     try:
         from django.core.management import execute_from_command_line
@@ -15,6 +16,7 @@ def main():
             "available on your PYTHONPATH environment variable? Did you "
             "forget to activate a virtual environment?"
         ) from exc
+    # Pass the user's command, such as runserver or migrate, to Django.
     execute_from_command_line(sys.argv)
 
 

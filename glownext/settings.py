@@ -17,6 +17,15 @@ from environs import Env
 env = Env()
 env.read_env()
 
+KHALTI_SECRET_KEY = env.str("KHALTI_SECRET_KEY", "")
+KHALTI_BASE_URL = env.str("KHALTI_BASE_URL", "https://dev.khalti.com/api/v2/")
+KHALTI_RETURN_URL = env.str(
+    "KHALTI_RETURN_URL",
+    "http://127.0.0.1:8000/api/payments/khalti/callback/",
+)
+WEBSITE_URL = env.str("WEBSITE_URL", "http://localhost:5173")
+FRONTEND_URL = env.str("FRONTEND_URL", "http://localhost:5173")
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,7 +40,7 @@ SECRET_KEY = 'django-insecure-*@kr8y)wbx48u7&q9fx*td&j6tj8al@_aa+y*w0q5(uaym3w-i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "testserver"]
 
 
 # Application definition
@@ -55,6 +64,7 @@ INSTALLED_APPS = [
     'anymail',
     'django_ckeditor_5',
     "api",
+    "import_export",
     
 ]
 
@@ -136,6 +146,12 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
 ]
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+}
 
 ROOT_URLCONF = 'glownext.urls'
 

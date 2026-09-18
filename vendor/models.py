@@ -26,6 +26,7 @@ VENDOR_STATUS = (
 )
 
 
+# Stores a beauty business and its vendor verification state.
 class vendor(models.Model):
         user =models.OneToOneField (user, on_delete=models.CASCADE, null=True,related_name="Vendor_name")
         image=models.ImageField(upload_to="images", default="shop-image.jpg", blank=True)
@@ -46,6 +47,7 @@ class vendor(models.Model):
                 return str(self.store_name)
 
         def save(self, *args, **kwargs):
+                # Keep the slug, status, and verification timestamp consistent.
                 if self.slug=="" or self.slug==None:
                         self.slug = slugify(self.store_name)
                 if self.is_verified and self.verification_status != "Verified":
@@ -58,6 +60,7 @@ class vendor(models.Model):
                         self.verified_at = None
                 super(vendor, self).save(*args, **kwargs) 
 
+# Links a vendor's payout record to a completed booking.
 class Payout(models.Model):
         vendor=models.ForeignKey(vendor, on_delete=models.SET_NULL,null=True)
         item = models.ForeignKey("store.Booking", on_delete=models.SET_NULL,null=True,related_name="store_item")
@@ -69,6 +72,7 @@ class Payout(models.Model):
         class Meta:
                 ordering =['-date']
 
+# Stores the bank or payment account used for vendor payouts.
 class BankAccount(models.Model):
         vendor= models.OneToOneField(vendor, on_delete=models.SET_NULL,null=True)
         account_type=models.CharField(max_length=50, choices=PAYOUT_METHOD, null=True, blank=True)
@@ -83,6 +87,7 @@ class BankAccount(models.Model):
         def __str__(self):
                 return self.bank_name
 
+# Stores notifications sent to vendors.
 class Notifications(models.Model):
         user=models.ForeignKey(user, on_delete=models.CASCADE, null=True, related_name="vendor_notifications")
         type= models.CharField(max_length=100, choices=TYPE,default=None)
