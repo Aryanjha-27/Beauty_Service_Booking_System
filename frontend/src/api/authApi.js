@@ -1,0 +1,52 @@
+import { apiClient, backendMissing, setTokens } from "./apiClient";
+async function login(payload) {
+  try {
+    const data = await apiClient.post("/auth/login/", payload, { auth: false });
+    setTokens(data.access ?? data.token ?? null, data.refresh ?? null);
+    return data;
+  } catch (error) {
+    if (isMissing(error)) return backendMissing("POST /api/auth/login/");
+    throw error;
+  }
+}
+async function register(payload) {
+  try {
+    return await apiClient.post("/auth/register/", payload, { auth: false });
+  } catch (error) {
+    if (isMissing(error)) return backendMissing("POST /api/auth/register/");
+    throw error;
+  }
+}
+async function getCurrentUser() {
+  try {
+    return await apiClient.get("/auth/user/");
+  } catch (error) {
+    if (isMissing(error)) return backendMissing("GET /api/auth/user/");
+    throw error;
+  }
+}
+async function logout() {
+  try {
+    await apiClient.post("/auth/logout/");
+  } catch {
+  } finally {
+    setTokens(null, null);
+  }
+}
+async function updateProfile(data) {
+  try {
+    return await apiClient.patch("/auth/profile/", data);
+  } catch (error) {
+    if (isMissing(error)) return backendMissing("PATCH /api/auth/profile/");
+    throw error;
+  }
+}
+function isMissing(error) {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "status" in error &&
+    (error.status === 404 || error.status === 0)
+  );
+}
+export { getCurrentUser, login, logout, register, updateProfile };

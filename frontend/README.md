@@ -1,35 +1,21 @@
-# React + Vite
+# Glow Next Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend application for **Glow Next** — Beauty & Salon Services Booking Platform.
 
-Currently, two official plugins are available:
+## Development
 
-# GlowNext frontend
+Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
 
-This folder contains the React and Vite frontend for GlowNext. Django remains the API and database owner.
-
-From the project root, start Django first:
-
-```powershell
-python manage.py runserver
-```
-
-Then run the frontend:
-
-```powershell
-Set-Location .\frontend
-npm install
+```sh
+git clone <this-repository-url>
+cd <repository-name>
+npm i
 npm run dev
 ```
 
-The React app reads live services from `/api/services/` and verified vendors from `/api/vendors/` on Django at `http://127.0.0.1:8000`.
+## Built with
 
-Useful commands:
-
-```powershell
-npm run lint
-npm run build
-npm run preview
-```
-
-See the root [README](../README.md) for setup and [CODE_GUIDE.md](../CODE_GUIDE.md) for the file-by-file explanation.
+- TanStack Start
+- TypeScript
+- React
+- Tailwind CSS

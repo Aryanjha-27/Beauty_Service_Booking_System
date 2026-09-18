@@ -1,79 +1,116 @@
-import "./Footer.css";
+import { Link } from "react-router-dom";
 
-const SERVICE_LINKS = ["Hair Styling", "Makeup Artistry", "Nail Care", "Skin Treatments", "Massage Therapy"];
-const COMPANY_LINKS = ["About Us", "Careers", "Blog", "Press", "Contact"];
-const SOCIAL_ICONS = ["fab fa-instagram", "fab fa-tiktok", "fab fa-pinterest", "fab fa-twitter"];
-
+/**
+ * Footer Component - Bottom footer for Glow Next
+ * Beginner-friendly layout with organized site links, contact info, and social icons.
+ */
 function Footer() {
-    return (
-        <footer id="contact" className="footer">
-            <div className="footer-grid">
-                {/* Brand column */}
-                <div>
-                    <div className="footer-brand-logo">
-                        <div className="footer-brand-icon">
-                            <i className="fas fa-spa"></i>
-                        </div>
-                        <span className="footer-brand-name">Glow Next</span>
-                    </div>
-                    <p className="footer-brand-desc">
-                        Your premier beauty booking platform. Connect with top artists and look your best,
-                        every day.
-                    </p>
-                </div>
+  const currentYear = new Date().getFullYear();
 
-                {/* Services column */}
-                <div>
-                    <h4 className="footer-column-title">Services</h4>
-                    <ul className="footer-links">
-                        {SERVICE_LINKS.map((item) => (
-                            <li key={item}>{item}</li>
-                        ))}
-                    </ul>
-                </div>
+  return (
+    <footer className="mt-20 border-t border-border bg-ink text-cream">
+      <div className="gn-container grid gap-10 py-14 md:grid-cols-2 lg:grid-cols-4">
+        {/* Brand Information Column */}
+        <div>
+          <Link to="/" className="font-display text-3xl text-cream">
+            Glow<span className="text-primary">Next</span>
+          </Link>
+          <p className="mt-3 text-sm text-cream/70 leading-relaxed">
+            Your premier platform to discover and book verified beauty specialists &amp; salons. Enjoy home visits or in-store appointments for hair, skincare, spa, and bridal styling.
+          </p>
+          {/* Social Icons */}
+          <div className="mt-5 flex gap-4 text-lg text-cream/75">
+            <a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram" className="hover:text-primary transition-colors">
+              <i className="fa-brands fa-instagram" />
+            </a>
+            <a href="https://facebook.com" target="_blank" rel="noreferrer" aria-label="Facebook" className="hover:text-primary transition-colors">
+              <i className="fa-brands fa-facebook" />
+            </a>
+            <a href="https://twitter.com" target="_blank" rel="noreferrer" aria-label="Twitter" className="hover:text-primary transition-colors">
+              <i className="fa-brands fa-x-twitter" />
+            </a>
+            <a href="https://whatsapp.com" target="_blank" rel="noreferrer" aria-label="WhatsApp" className="hover:text-primary transition-colors">
+              <i className="fa-brands fa-whatsapp" />
+            </a>
+          </div>
+        </div>
 
-                {/* Company column */}
-                <div>
-                    <h4 className="footer-column-title">Company</h4>
-                    <ul className="footer-links">
-                        {COMPANY_LINKS.map((item) => (
-                            <li key={item}>{item}</li>
-                        ))}
-                    </ul>
-                </div>
+        {/* Quick Navigation Links */}
+        <div>
+          <p className="gn-eyebrow text-primary">Quick Links</p>
+          <ul className="mt-4 space-y-2.5 text-sm text-cream/80">
+            <li>
+              <Link to="/" className="hover:text-cream transition-colors">Home</Link>
+            </li>
+            <li>
+              <Link to="/services" className="hover:text-cream transition-colors">Beauty Services</Link>
+            </li>
+            <li>
+              <Link to="/how-we-work" className="hover:text-cream transition-colors">How We Work</Link>
+            </li>
+            <li>
+              <Link to="/about" className="hover:text-cream transition-colors">About Us</Link>
+            </li>
+            <li>
+              <Link to="/vendors" className="hover:text-cream transition-colors">Salons &amp; Studios</Link>
+            </li>
+          </ul>
+        </div>
 
-                {/* Newsletter column */}
-                <div>
-                    <h4 className="footer-column-title">Stay Connected</h4>
-                    <p className="footer-newsletter-text">
-                        Get beauty tips and exclusive offers.
-                    </p>
-                    <div className="footer-newsletter-form">
-                        <input
-                            type="email"
-                            className="footer-newsletter-input"
-                            placeholder="Your email"
-                        />
-                        <button className="footer-newsletter-btn" aria-label="Subscribe">
-                            <i className="fas fa-arrow-right"></i>
-                        </button>
-                    </div>
-                    <div className="footer-socials">
-                        {SOCIAL_ICONS.map((icon, i) => (
-                            <a key={i} href="#" className="footer-social-link" aria-label="Social link">
-                                <i className={icon}></i>
-                            </a>
-                        ))}
-                    </div>
-                </div>
-            </div>
+        {/* Account Links */}
+        <div>
+          <p className="gn-eyebrow text-primary">Client &amp; Account</p>
+          <ul className="mt-4 space-y-2.5 text-sm text-cream/80">
+            <li>
+              <Link to="/dashboard" className="hover:text-cream transition-colors">User Dashboard</Link>
+            </li>
+            <li>
+              <Link to="/bookings" className="hover:text-cream transition-colors">My Appointments</Link>
+            </li>
+            <li>
+              <Link to="/wishlist" className="hover:text-cream transition-colors">Saved Wishlist</Link>
+            </li>
+            <li>
+              <Link to="/login" className="hover:text-cream transition-colors">Client Login</Link>
+            </li>
+            <li>
+              <Link to="/register" className="hover:text-cream transition-colors">Create Account</Link>
+            </li>
+          </ul>
+        </div>
 
-            <div className="footer-bottom">
-                2025 Glow Next. All rights reserved. Crafted with{" "}
-                <i className="fas fa-heart heart"></i> for beauty lovers.
-            </div>
-        </footer>
-    );
+        {/* Contact Info Column */}
+        <div>
+          <p className="gn-eyebrow text-primary">Contact &amp; Support</p>
+          <ul className="mt-4 space-y-3 text-sm text-cream/80">
+            <li className="flex items-center gap-3">
+              <i className="fa-solid fa-envelope text-primary" />
+              <span>support@glownext.com</span>
+            </li>
+            <li className="flex items-center gap-3">
+              <i className="fa-solid fa-phone text-primary" />
+              <span>+977 980-0000000</span>
+            </li>
+            <li className="flex items-center gap-3">
+              <i className="fa-solid fa-location-dot text-primary" />
+              <span>Kathmandu, Nepal</span>
+            </li>
+            <li className="flex items-center gap-3">
+              <i className="fa-solid fa-clock text-primary" />
+              <span>Mon - Sun: 8:00 AM - 8:00 PM</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      {/* Bottom Copyright Bar */}
+      <div className="gn-container border-t border-cream/10 py-6 text-center text-xs text-cream/60 md:flex md:justify-between">
+        <p>&copy; {currentYear} Glow Next. All rights reserved.</p>
+        <p className="mt-2 md:mt-0">Book trusted beauty professionals in a few taps.</p>
+      </div>
+    </footer>
+  );
 }
 
+export { Footer };
 export default Footer;
