@@ -1,5 +1,5 @@
 from rest_framework import serializers
-
+from django.db.models import Avg
 from store.models import (
     Category,
     Tag,
@@ -16,36 +16,42 @@ from vendor.models import vendor as VendorModel
 from customer.models import Address as CustomerAddress, Wishlist as CustomerWishlist, Notifications as CustomerNotification
 
 
+# Converts category model records into API JSON.
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ["id", "title", "slug", "image"]
 
 
+# Converts service tag records into API JSON.
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ["id", "title"]
 
 
+# Converts gallery image records into API JSON.
 class ServiceGallerySerializer(serializers.ModelSerializer):
     class Meta:
         model = ServiceGallery
         fields = ["id", "image", "caption", "date"]
 
 
+# Converts service opening-hour records into API JSON.
 class ServiceAvailabilitySerializer(serializers.ModelSerializer):
     class Meta:
         model = ServiceAvailability
         fields = ["id", "day", "start_time", "end_time", "is_active"]
 
 
+# Converts a user profile into API JSON.
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProfileModel
         fields = ["id", "full_name", "image", "address", "mobile", "user_type"]
 
 
+# Converts the custom user and its profile into API JSON.
 class UserSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer(read_only=True)
 
@@ -54,6 +60,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ["id", "email", "username", "profile"]
 
 
+# Converts complete vendor data, including verification documents for staff.
 class VendorSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
 
@@ -76,16 +83,45 @@ class VendorSerializer(serializers.ModelSerializer):
         ]
 
 
+# Removes the private verification document from public vendor responses.
 class PublicVendorSerializer(VendorSerializer):
+    average_rating = serializers.SerializerMethodField()
+    review_count = serializers.SerializerMethodField()
+
     class Meta(VendorSerializer.Meta):
         fields = [
             field for field in VendorSerializer.Meta.fields
             if field != "document"
+        ] + [
+            "average_rating",
+            "review_count",
         ]
 
+    def get_average_rating(self, obj):
+        result = ServiceReview.objects.filter(
+            service__vendor=obj,
+            active=True,
+        ).aggregate(
+            average=Avg("rating")
+        )
 
+        average = result["average"]
+
+        if average is None:
+            return 0
+
+        return round(float(average), 1)
+
+    def get_review_count(self, obj):
+        return ServiceReview.objects.filter(
+            service__vendor=obj,
+            active=True,
+        ).count()
+
+
+# Builds the nested public JSON representation of a service.
 class ServiceSerializer(serializers.ModelSerializer):
-    vendor = VendorSerializer(read_only=True)
+    vendor = PublicVendorSerializer(read_only=True)
     category = CategorySerializer(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
     gallery = ServiceGallerySerializer(many=True, read_only=True)
@@ -95,6 +131,7 @@ class ServiceSerializer(serializers.ModelSerializer):
     effective_price = serializers.ReadOnlyField()
     average_rating = serializers.ReadOnlyField()
     review_count = serializers.ReadOnlyField()
+    booking_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Service
@@ -122,18 +159,26 @@ class ServiceSerializer(serializers.ModelSerializer):
             "availability",
             "average_rating",
             "review_count",
+            "booking_count",
         ]
 
+    # Return the vendor's display name for clients that need a flat value.
     def get_vendor_name(self, obj):
         return obj.vendor.store_name if obj.vendor else None
 
+    # Return the category title for clients that need a flat value.
     def get_category_name(self, obj):
         return obj.category.title if obj.category else None
 
+    def get_booking_count(self, obj):
+        return obj.bookings.count()
 
+
+# Serializes bookings and accepts related objects through their ID fields.
 class BookingSerializer(serializers.ModelSerializer):
     customer = UserSerializer(read_only=True)
     service = ServiceSerializer(read_only=True)
+    has_review = serializers.SerializerMethodField()
     customer_id = serializers.PrimaryKeyRelatedField(
         source="customer",
         queryset=UserModel.objects.all(),
@@ -167,9 +212,14 @@ class BookingSerializer(serializers.ModelSerializer):
             "payment_status",
             "total",
             "date",
+            "has_review",
         ]
 
+    def get_has_review(self, obj):
+        return hasattr(obj, "review")
 
+
+# Converts service review records into API JSON.
 class ServiceReviewSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     service = ServiceSerializer(read_only=True)
@@ -189,6 +239,7 @@ class ServiceReviewSerializer(serializers.ModelSerializer):
         ]
 
 
+# Converts store wishlist records and validates submitted user/service IDs.
 class StoreWishlistSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     service = ServiceSerializer(read_only=True)
@@ -210,6 +261,7 @@ class StoreWishlistSerializer(serializers.ModelSerializer):
         fields = ["id", "user", "user_id", "service", "service_id", "date"]
 
 
+# Converts customer wishlist records into API JSON.
 class CustomerWishlistSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     service = ServiceSerializer(read_only=True)
@@ -219,6 +271,7 @@ class CustomerWishlistSerializer(serializers.ModelSerializer):
         fields = ["id", "user", "service"]
 
 
+# Converts store notification records into API JSON.
 class NotificationSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     booking = BookingSerializer(read_only=True)
@@ -228,6 +281,7 @@ class NotificationSerializer(serializers.ModelSerializer):
         fields = ["id", "nid", "user", "booking", "type", "message", "seen", "date"]
 
 
+# Converts customer notification records into API JSON.
 class CustomerNotificationSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     booking = BookingSerializer(read_only=True)
@@ -237,6 +291,7 @@ class CustomerNotificationSerializer(serializers.ModelSerializer):
         fields = ["id", "user", "type", "seen", "date", "booking"]
 
 
+# Converts customer address records into API JSON.
 class CustomerAddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomerAddress

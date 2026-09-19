@@ -3,6 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from userauth import models
 
 
+# Displays profile fields inline on the custom user admin page.
 class ProfileInline(admin.StackedInline):
     model = models.profile
     can_delete = False
@@ -17,6 +18,7 @@ class ProfileInline(admin.StackedInline):
     )
 
 
+# Configures user search, permissions, dates, and profile display in admin.
 class CustomUserAdmin(UserAdmin):
 
     list_display = (
@@ -101,6 +103,7 @@ class CustomUserAdmin(UserAdmin):
     inlines = [ProfileInline]
 
     def get_user_type(self, obj):
+        # Safely show the related profile role when a profile exists.
         try:
             return obj.profile.user_type or "Not Set"
         except models.profile.DoesNotExist:
@@ -109,6 +112,7 @@ class CustomUserAdmin(UserAdmin):
     get_user_type.short_description = "Role"
 
 
+# Configures profile search, filtering, and displayed contact fields.
 class ProfileAdmin(admin.ModelAdmin):
 
     list_display = (
@@ -137,5 +141,6 @@ class ProfileAdmin(admin.ModelAdmin):
     get_email.short_description = "Email"
 
 
+# Register users and profiles in Django admin.
 admin.site.register(models.user, CustomUserAdmin)
 admin.site.register(models.profile, ProfileAdmin)

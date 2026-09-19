@@ -61,7 +61,7 @@ DAY_CHOICES = (
 )
 
 
-
+# Stores the categories used to group beauty services.
 class Category(models.Model):
     title = models.CharField(max_length=255)
     image = models.FileField(upload_to="category", null=True, blank=True)
@@ -80,6 +80,7 @@ class Category(models.Model):
         super().save(*args, **kwargs)
 
 
+# Stores reusable labels that can be attached to services.
 class Tag(models.Model):
     title = models.CharField(max_length=100, unique=True)
 
@@ -87,7 +88,7 @@ class Tag(models.Model):
         return self.title
 
 
-
+# Stores a vendor's beauty service and its publication settings.
 class Service(models.Model):
 
     sid = ShortUUIDField(
@@ -148,18 +149,19 @@ class Service(models.Model):
         return self.title
 
     def clean(self):
-        if self._state.adding and self.vendor_id and not self.vendor.is_verified:
-            raise ValidationError("Only verified vendors can post services.")
+        if self._state.adding and self.vendor_id and not self.vendor.is_verified and self.status != "Draft":
+            raise ValidationError("Your vendor account is not verified. Services can be listed after your account is verified.")
 
     class Meta:
         ordering = ["-date"]
         verbose_name_plural = "Services"
 
     def save(self, *args, **kwargs):
+        # Enforce verification for public listings while allowing vendor drafts.
         if self._state.adding and self.vendor_id:
             vendor = self.vendor if hasattr(self, "vendor") else vendor_models.vendor.objects.get(pk=self.vendor_id)
-            if not vendor.is_verified:
-                raise ValidationError("Only verified vendors can post services.")
+            if not vendor.is_verified and self.status != "Draft":
+                raise ValidationError("Your vendor account is not verified. Services can be listed after your account is verified.")
         if not self.slug:
             self.slug = slugify(self.title) + "-" + shortuuid.uuid()[:4]
         super().save(*args, **kwargs)
@@ -208,7 +210,7 @@ class Service(models.Model):
         return self.service_type in ("Store", "Both")
 
 
-
+# Stores additional images belonging to a service.
 class ServiceGallery(models.Model):
 
     gid = ShortUUIDField(
@@ -234,7 +236,7 @@ class ServiceGallery(models.Model):
         ordering = ["date"]
 
 
-
+# Stores the days and hours when a service can be booked.
 class ServiceAvailability(models.Model):
 
     service    = models.ForeignKey(
@@ -258,7 +260,7 @@ class ServiceAvailability(models.Model):
         ordering = ["day", "start_time"]
 
 
-
+# Stores customer booking, schedule, status, and payment information.
 class Booking(models.Model):
 
     bid = ShortUUIDField(
@@ -317,7 +319,7 @@ class Booking(models.Model):
         verbose_name_plural = "Bookings"
 
 
-
+# Stores a customer's rating and review for a service.
 class ServiceReview(models.Model):
 
     rid = ShortUUIDField(
@@ -361,7 +363,7 @@ class ServiceReview(models.Model):
         verbose_name_plural = "Service Reviews"
 
 
-
+# Stores a service that a user has saved for later.
 class Wishlist(models.Model):
 
     user    = models.ForeignKey(
@@ -386,7 +388,7 @@ class Wishlist(models.Model):
 
 
 
-
+# Stores booking, payment, and general messages for users.
 class Notification(models.Model):
 
     NOTIFICATION_TYPE = (

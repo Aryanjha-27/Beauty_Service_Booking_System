@@ -7,6 +7,7 @@ USER_TYPE = (
 )
 
 
+# Defines the project's custom email-based user account.
 class user(AbstractUser):
     username = models.CharField(
         max_length=255,
@@ -25,12 +26,14 @@ class user(AbstractUser):
         return self.email
 
     def save(self, *args, **kwargs):
+        # Use the email prefix as a username when one was not provided.
         if self.email and not self.username:
             self.username = self.email.split("@")[0]
 
         super().save(*args, **kwargs)
 
 
+# Stores profile information associated with one user account.
 class profile(models.Model):
     user = models.OneToOneField(
         user,
@@ -74,6 +77,7 @@ class profile(models.Model):
         return self.full_name or self.user.username
 
     def save(self, *args, **kwargs):
+        # Use the account username as a fallback display name.
         if not self.full_name:
             self.full_name = self.user.username
 

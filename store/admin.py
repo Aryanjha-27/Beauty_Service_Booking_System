@@ -5,11 +5,13 @@ from vendor import models as vendor_models
 
 
 
+# Shows service gallery records inside the service admin form.
 class ServiceGalleryInline(admin.TabularInline):
     model = store_models.ServiceGallery
     extra = 1
 
 
+# Shows service availability records inside the service admin form.
 class ServiceAvailabilityInline(admin.TabularInline):
     model = store_models.ServiceAvailability
     extra = 1
@@ -17,6 +19,7 @@ class ServiceAvailabilityInline(admin.TabularInline):
 
 
 
+# Configures category fields, search, and automatic slug generation.
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ("title", "slug")
     search_fields = ("title",)
@@ -27,6 +30,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 
+# Configures the tag list and search behavior in admin.
 class TagAdmin(admin.ModelAdmin):
     list_display = ("title",)
     search_fields = ("title",)
@@ -34,6 +38,7 @@ class TagAdmin(admin.ModelAdmin):
 
 
 
+# Configures service editing, filtering, related inlines, and vendor choices.
 class ServiceAdmin(admin.ModelAdmin):
     list_display = (
         "title",
@@ -74,6 +79,7 @@ class ServiceAdmin(admin.ModelAdmin):
     )
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        # Only verified vendors can be selected for new services.
         if db_field.name == "vendor":
             kwargs["queryset"] = vendor_models.vendor.objects.filter(is_verified=True).order_by("store_name")
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
@@ -86,6 +92,7 @@ class ServiceAdmin(admin.ModelAdmin):
 
 
 
+# Configures the service gallery list in admin.
 class ServiceGalleryAdmin(admin.ModelAdmin):
     list_display = (
         "service",
@@ -100,6 +107,7 @@ class ServiceGalleryAdmin(admin.ModelAdmin):
 
 
 
+# Configures service availability filtering and search in admin.
 class ServiceAvailabilityAdmin(admin.ModelAdmin):
     list_display = (
         "service",
@@ -121,6 +129,7 @@ class ServiceAvailabilityAdmin(admin.ModelAdmin):
 
 
 
+# Configures booking columns, filters, search, and date navigation.
 class BookingAdmin(admin.ModelAdmin):
 
     list_display = (
@@ -166,6 +175,7 @@ class BookingAdmin(admin.ModelAdmin):
 
     
     def get_vendor(self, obj):
+        # Display the related vendor name while handling missing relations.
         if obj.service and obj.service.vendor:
             return obj.service.vendor.store_name
 
@@ -173,6 +183,7 @@ class BookingAdmin(admin.ModelAdmin):
 
 
 
+# Configures moderation fields for service reviews.
 class ServiceReviewAdmin(admin.ModelAdmin):
     list_display = (
         "service",
@@ -192,6 +203,7 @@ class ServiceReviewAdmin(admin.ModelAdmin):
 
 
 
+# Configures the saved-service list in admin.
 class WishlistAdmin(admin.ModelAdmin):
     list_display = (
         "user",
@@ -201,6 +213,7 @@ class WishlistAdmin(admin.ModelAdmin):
 
 
 
+# Configures notification columns and filters in admin.
 class NotificationAdmin(admin.ModelAdmin):
     list_display = (
         "user",
@@ -217,6 +230,7 @@ class NotificationAdmin(admin.ModelAdmin):
 
 
 
+# Register store models so staff can manage marketplace data in Django admin.
 admin.site.register(store_models.Category, CategoryAdmin)
 admin.site.register(store_models.Tag, TagAdmin)
 admin.site.register(store_models.Service, ServiceAdmin)

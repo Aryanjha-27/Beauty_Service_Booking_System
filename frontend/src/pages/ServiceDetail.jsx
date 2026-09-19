@@ -1,166 +1,223 @@
-import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
-import { getService } from "@/api/serviceApi";
+import { useParams } from "react-router-dom";
+import { useState, useEffect, useCallback } from "react";
+
+import {
+  getVendor,
+  listVendorServices,
+} from "@/api/vendorApi";
+
 import { imageUrl } from "@/utils/imageUrl";
-import { formatPrice, discountPercent } from "@/utils/formatPrice";
+import { ServiceCard } from "@/components/ServiceCard";
 import { RatingStars } from "@/components/RatingStars";
-import { WishlistButton } from "@/components/WishlistButton";
-import { ReviewCard } from "@/components/ReviewCard";
-import { listServiceReviews } from "@/api/reviewApi";
 import { ErrorMessage } from "@/components/ErrorMessage";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 
-/**
- * Service Detail Page - Shows full details for a single service
- */
-export default function ServiceDetail() {
+export default function SalonDetail() {
   const { slug } = useParams();
 
-  const [service, setService] = useState(null);
+  const [vendor, setVendor] = useState(null);
+  const [services, setServices] = useState([]);
+
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [reviews, setReviews] = useState([]);
 
-  const fetchService = async () => {
+  const fetchVendor = useCallback(async () => {
+    if (!slug) return;
+
     setIsLoading(true);
     setError(null);
+
     try {
-      const data = await getService(slug);
-      setService(data);
-      const reviewData = await listServiceReviews(data.slug);
-      setReviews(reviewData.results ?? []);
+      const [vendorData, servicesData] = await Promise.all([
+        getVendor(slug),
+        listVendorServices(slug),
+      ]);
+
+      setVendor(vendorData);
+      setServices(servicesData ?? []);
     } catch (err) {
       setError(err);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchService();
   }, [slug]);
 
-  if (isLoading) return <LoadingSpinner label="Loading service details..." />;
-  if (error) return <ErrorMessage error={error} onRetry={fetchService} />;
-  if (!service) return null;
+  useEffect(() => {
+    fetchVendor();
+  }, [fetchVendor]);
 
-  const thumb = imageUrl(service.thumbnail);
-  const hasDiscount = Number(service.effective_price) < Number(service.price);
-  const percent = discountPercent(service.price, service.effective_price);
+  if (isLoading) {
+    return (
+      <LoadingSpinner label="Loading salon details..." />
+    );
+  }
+
+  if (error) {
+    return (
+      <ErrorMessage
+        error={error}
+        onRetry={fetchVendor}
+      />
+    );
+  }
+
+  if (!vendor) {
+    return null;
+  }
+
+  const businessName =
+    vendor.business_name ??
+    vendor.store_name ??
+    "Beauty Studio";
+
+  const banner = imageUrl(
+    vendor.banner_image ?? vendor.image,
+  );
+
+  const logo = imageUrl(
+    vendor.logo ?? vendor.image,
+  );
 
   return (
-    <div className="gn-container py-12">
-      <Link to="/services" className="text-sm font-semibold text-primary hover:underline">
-        &larr; Back to all services
-      </Link>
-
-      <div className="mt-6 grid gap-10 lg:grid-cols-2">
-        {/* Thumbnail Image */}
-        <div className="relative overflow-hidden rounded-3xl border border-border bg-secondary">
-          {thumb ? (
-            <img
-              src={thumb}
-              alt={service.title}
-              className="aspect-[4/3] w-full object-cover"
-            />
-          ) : (
-            <div className="grid aspect-[4/3] w-full place-items-center text-muted-foreground">
-              <i className="fa-regular fa-image text-5xl" />
-            </div>
-          )}
-          <div className="absolute right-4 top-4">
-            <WishlistButton serviceId={service.id} />
-          </div>
-        </div>
-
-        {/* Details & Booking Sidebar */}
-        <div className="flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                {service.category_name ?? "Beauty Treatment"}
-              </span>
-              <RatingStars rating={service.average_rating} count={service.review_count} />
-            </div>
-
-            <h1 className="mt-2 font-display text-3xl sm:text-4xl text-foreground">
-              {service.title}
-            </h1>
-
-            <p className="mt-2 text-sm text-muted-foreground">
-              Offered by{" "}
-              <Link to={`/vendors/${service.vendor_slug ?? ""}`} className="font-semibold text-primary hover:underline">
-                {service.vendor_name ?? "Salon Studio"}
-              </Link>
-            </p>
-
-            <div className="mt-6 flex items-baseline gap-3">
-              {hasDiscount ? (
-                <span className="text-lg text-muted-foreground line-through">
-                  {formatPrice(service.price)}
-                </span>
-              ) : null}
-              <span className="font-display text-4xl text-foreground">
-                {formatPrice(service.effective_price)}
-              </span>
-              {percent ? (
-                <span className="gn-badge bg-primary text-primary-foreground font-bold">
-                  SAVE {percent}%
-                </span>
-              ) : null}
-            </div>
-
-            <div className="mt-6 space-y-3 rounded-2xl bg-secondary/30 p-5 text-sm border border-border">
-              <div className="flex items-center gap-3">
-                <i className="fa-solid fa-clock text-primary" />
-                <span>Duration: {service.duration_minutes ?? 60} minutes</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <i className="fa-solid fa-house-chimney text-primary" />
-                <span>
-                  Service Type:{" "}
-                  {service.service_type === "Both"
-                    ? "Home Visit or In-Store"
-                    : `${service.service_type} Visit`}
-                </span>
-              </div>
-            </div>
-
-            <div className="mt-6">
-              <h3 className="font-bold text-foreground">Description</h3>
-              <p className="mt-2 text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-                {service.description || "No description provided for this service."}
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-8 pt-6 border-t border-border flex gap-4">
-            <Link
-              to={`/booking/${service.slug ?? service.sid}`}
-              className="gn-btn gn-btn-primary flex-1 py-3 text-center text-base font-bold"
-            >
-              Book Now &rarr;
-            </Link>
-          </div>
-        </div>
+    <div>
+      {/* Banner */}
+      <div className="relative h-64 sm:h-80 w-full bg-ink">
+        {banner ? (
+          <img
+            src={banner}
+            alt={businessName}
+            className="size-full object-cover opacity-60"
+          />
+        ) : (
+          <div className="size-full bg-secondary" />
+        )}
       </div>
 
-      <section className="mt-12 border-t border-border pt-10">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <p className="gn-eyebrow text-primary">Client feedback</p>
-            <h2 className="mt-1 font-display text-3xl text-foreground">Reviews</h2>
+      <div className="gn-container py-8">
+
+        {/* Salon Header */}
+        <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 -mt-20 relative z-10">
+
+          <div className="flex items-end gap-5">
+
+            {/* Logo */}
+            <div className="size-24 sm:size-32 overflow-hidden rounded-3xl border-4 border-background bg-background shadow-xl">
+              {logo ? (
+                <img
+                  src={logo}
+                  alt={businessName}
+                  className="size-full object-cover"
+                />
+              ) : (
+                <div className="grid size-full place-items-center bg-primary text-primary-foreground font-display text-4xl">
+                  {businessName?.[0] ?? "S"}
+                </div>
+              )}
+            </div>
+
+            {/* Name + Rating */}
+            <div>
+              <h1 className="font-display text-3xl sm:text-5xl text-foreground">
+                {businessName}
+              </h1>
+
+              <div className="mt-2 flex flex-wrap items-center gap-3">
+                <RatingStars
+                  rating={vendor.average_rating}
+                  count={vendor.review_count}
+                />
+
+                {vendor.is_verified ? (
+                  <span className="gn-badge bg-primary text-primary-foreground">
+                    Verified Studio
+                  </span>
+                ) : null}
+              </div>
+            </div>
+
           </div>
-          <RatingStars rating={service.average_rating} count={service.review_count} />
         </div>
-        {reviews.length ? (
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
-            {reviews.map((review) => <ReviewCard key={review.id ?? review.rid} review={review} />)}
+
+        {/* Description */}
+        <div className="mt-8 max-w-3xl">
+          <h2 className="font-bold text-lg text-foreground">
+            About the Studio
+          </h2>
+
+          <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+            {vendor.description ||
+              "Welcome to our beauty studio! Book your appointments online."}
+          </p>
+
+          {/* Location */}
+          {(vendor.city || vendor.country) ? (
+            <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
+              <i
+                className="fa-solid fa-location-dot text-primary"
+                aria-hidden="true"
+              />
+
+              <span>
+                {[vendor.city, vendor.country]
+                  .filter(Boolean)
+                  .join(", ")}
+              </span>
+            </div>
+          ) : null}
+        </div>
+
+        {/* Services */}
+        <div className="mt-12">
+
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="gn-eyebrow text-primary">
+                What we offer
+              </p>
+
+              <h2 className="font-display text-3xl text-foreground">
+                Services Offered
+              </h2>
+            </div>
+
+            <span className="text-sm text-muted-foreground">
+              {services.length}{" "}
+              {services.length === 1 ? "service" : "services"}
+            </span>
           </div>
-        ) : (
-          <p className="mt-6 text-sm text-muted-foreground">No written reviews yet.</p>
-        )}
-      </section>
+
+          {services.length > 0 ? (
+            <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {services.map((service) => (
+                <ServiceCard
+                  key={String(
+                    service.sid ?? service.id,
+                  )}
+                  service={service}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="gn-card mt-6 p-8 text-center">
+              <div className="mx-auto grid size-12 place-items-center rounded-full bg-secondary text-muted-foreground">
+                <i
+                  className="fa-solid fa-spa"
+                  aria-hidden="true"
+                />
+              </div>
+
+              <h3 className="mt-4 font-bold text-foreground">
+                No services available
+              </h3>
+
+              <p className="mt-1 text-sm text-muted-foreground">
+                This studio has not published any services yet.
+              </p>
+            </div>
+          )}
+
+        </div>
+      </div>
     </div>
   );
 }
