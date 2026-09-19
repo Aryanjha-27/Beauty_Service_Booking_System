@@ -2,6 +2,7 @@ import { apiClient, backendMissing, normalizeList } from "./apiClient";
 
 function normalizeVendor(vendor) {
   if (!vendor || typeof vendor !== "object") return vendor;
+
   return {
     ...vendor,
     business_name: vendor.business_name ?? vendor.store_name,
@@ -10,41 +11,122 @@ function normalizeVendor(vendor) {
   };
 }
 
+function normalizeService(service) {
+  if (!service || typeof service !== "object") return service;
+
+  return {
+    ...service,
+    vendor_name:
+      service.vendor_name ??
+      service.vendor?.store_name,
+
+    vendor_slug:
+      service.vendor_slug ??
+      service.vendor?.slug,
+  };
+}
+
 async function listVendors() {
   try {
-    const payload = await apiClient.get("/vendors/", { auth: false });
-    return normalizeList(payload).results.map(normalizeVendor);
-  } catch {
+    const payload = await apiClient.get(
+      "/vendors/",
+      { auth: false },
+    );
+
+    return normalizeList(payload)
+      .results
+      .map(normalizeVendor);
+  } catch (error) {
+    if (error?.status !== 404 && error?.status !== 0) {
+      throw error;
+    }
+
     return backendMissing("GET /api/vendors/");
   }
 }
+
 async function getVendor(slug) {
   try {
-    return normalizeVendor(await apiClient.get(`/vendors/${slug}/`, { auth: false }));
-  } catch {
-    return backendMissing(`GET /api/vendors/${slug}/`);
+    const payload = await apiClient.get(
+      `/vendors/${encodeURIComponent(slug)}/`,
+      { auth: false },
+    );
+
+    return normalizeVendor(payload);
+  } catch (error) {
+    if (error?.status !== 404 && error?.status !== 0) {
+      throw error;
+    }
+
+    return backendMissing(
+      `GET /api/vendors/${slug}/`,
+    );
   }
 }
+
+async function listVendorServices(slug) {
+  try {
+    const payload = await apiClient.get(
+      `/vendors/${encodeURIComponent(slug)}/services/`,
+      { auth: false },
+    );
+
+    return normalizeList(payload)
+      .results
+      .map(normalizeService);
+  } catch (error) {
+    if (error?.status !== 404 && error?.status !== 0) {
+      throw error;
+    }
+
+    return backendMissing(
+      `GET /api/vendors/${slug}/services/`,
+    );
+  }
+}
+
 async function getMyVendorProfile() {
   try {
     return await apiClient.get("/vendor/profile/");
   } catch {
-    return backendMissing("GET /api/vendor/profile/");
+    return backendMissing(
+      "GET /api/vendor/profile/",
+    );
   }
 }
+
 async function updateMyVendorProfile(data) {
   try {
-    return await apiClient.patch("/vendor/profile/", data);
+    return await apiClient.patch(
+      "/vendor/profile/",
+      data,
+    );
   } catch {
-    return backendMissing("PATCH /api/vendor/profile/");
+    return backendMissing(
+      "PATCH /api/vendor/profile/",
+    );
   }
 }
+
 async function getMyVendorEarnings() {
   try {
     return await apiClient.get("/vendor/earnings/");
   } catch (error) {
-    if (error?.status !== 404 && error?.status !== 0) throw error;
-    return backendMissing("GET /api/vendor/earnings/");
+    if (error?.status !== 404 && error?.status !== 0) {
+      throw error;
+    }
+
+    return backendMissing(
+      "GET /api/vendor/earnings/",
+    );
   }
 }
-export { getMyVendorEarnings, getMyVendorProfile, getVendor, listVendors, updateMyVendorProfile };
+
+export {
+  getMyVendorEarnings,
+  getMyVendorProfile,
+  getVendor,
+  listVendors,
+  listVendorServices,
+  updateMyVendorProfile,
+};

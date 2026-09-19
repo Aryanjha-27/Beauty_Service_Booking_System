@@ -1,5 +1,5 @@
 from rest_framework import serializers
-
+from django.db.models import Avg
 from store.models import (
     Category,
     Tag,
@@ -85,16 +85,43 @@ class VendorSerializer(serializers.ModelSerializer):
 
 # Removes the private verification document from public vendor responses.
 class PublicVendorSerializer(VendorSerializer):
+    average_rating = serializers.SerializerMethodField()
+    review_count = serializers.SerializerMethodField()
+
     class Meta(VendorSerializer.Meta):
         fields = [
             field for field in VendorSerializer.Meta.fields
             if field != "document"
+        ] + [
+            "average_rating",
+            "review_count",
         ]
+
+    def get_average_rating(self, obj):
+        result = ServiceReview.objects.filter(
+            service__vendor=obj,
+            active=True,
+        ).aggregate(
+            average=Avg("rating")
+        )
+
+        average = result["average"]
+
+        if average is None:
+            return 0
+
+        return round(float(average), 1)
+
+    def get_review_count(self, obj):
+        return ServiceReview.objects.filter(
+            service__vendor=obj,
+            active=True,
+        ).count()
 
 
 # Builds the nested public JSON representation of a service.
 class ServiceSerializer(serializers.ModelSerializer):
-    vendor = VendorSerializer(read_only=True)
+    vendor = PublicVendorSerializer(read_only=True)
     category = CategorySerializer(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
     gallery = ServiceGallerySerializer(many=True, read_only=True)

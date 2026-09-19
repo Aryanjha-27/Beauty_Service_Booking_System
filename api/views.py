@@ -612,7 +612,41 @@ class VendorDetailAPI(APIView):
         vendor = get_object_or_404(VendorModel, slug=slug, is_verified=True)
         serializer = PublicVendorSerializer(vendor)
         return Response(serializer.data)
+class VendorPublicServicesAPI(APIView):
+    permission_classes = [AllowAny]
 
+    def get(self, request, slug):
+        vendor = get_object_or_404(
+            VendorModel,
+            slug=slug,
+            is_verified=True,
+        )
+
+        services = (
+            Service.objects
+            .filter(
+                vendor=vendor,
+                status="Published",
+            )
+            .select_related(
+                "vendor",
+                "category",
+            )
+            .prefetch_related(
+                "tags",
+                "gallery",
+                "availability",
+                "reviews",
+            )
+            .order_by("-date")
+        )
+
+        serializer = ServiceSerializer(
+            services,
+            many=True,
+        )
+
+        return Response(serializer.data)
 
 # Allows an administrator to approve or reject a vendor.
 class VendorVerificationAPI(APIView):
